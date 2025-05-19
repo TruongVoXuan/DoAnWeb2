@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chơi Game</title>
+    <link rel="stylesheet" href="/css/ingame.css">
+   
+</head>
+<body>
+<div class="container game-container">
+    <img src="/images/logoInGame.jpg" alt="Background" class="main-img1">
+
+    <div class="timer" id="timer">30</div>
+
+    <div class="lifelines">
+        <img src="/images/5050.png" alt="50:50">
+        <img src="/images/call.jpg" alt="Call">
+        <img src="/images/audience.jpg" alt="Audience">
+    </div>
+
+    <div class="money-ladder">
+        <div>15 - 150,000</div>
+        <div>14 - 85,000</div>
+        <div>13 - 60,000</div>
+        <div>12 - 40,000</div>
+        <div>11 - 30,000</div>
+        <div>10 - 22,000</div>
+        <div>9 - 14,000</div>
+        <div>8 - 10,000</div>
+        <div>7 - 6,000</div>
+        <div>6 - 3,000</div>
+        <div>5 - 2,000</div>
+        <div>4 - 1,000</div>
+        <div>3 - 600</div>
+        <div>2 - 400</div>
+        <div class="active-question">1 - 200</div>
+    </div>
+
+    <div class="question-box">
+    <p class="question-text">Trăng khoe trăng tỏ hơn ..., cớ sao trăng phải chịu luồng đám mây?</p>
+	</div>
+
+    <div class="answer-buttons">
+        <button class="answer-btn">A: Mờ</button>
+        <button class="answer-btn">B: Mây</button>
+        <button class="answer-btn">C: Sao</button>
+        <button class="answer-btn">D: Đèn</button>
+    </div>
+</div>
+
+<script>
+    // Đồng hồ đếm ngược 30s
+    let time = 30;
+    const timerElement = document.getElementById("timer");
+
+    const countdown = setInterval(() => {
+        time--;
+        timerElement.textContent = time;
+        if (time === 0) {
+            clearInterval(countdown);
+            alert("Hết thời gian!");
+        }
+    }, 1000);
+</script>
+</body>
+</html>

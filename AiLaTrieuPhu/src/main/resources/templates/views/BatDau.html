@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nhập Thông Tin Người Chơi</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <div class="background-overlay">
+        <img src="/images/logo.jpg" alt="Ai là triệu phú" class="main-img">
+        <div class="overlay-content">
+
+            <h1>Nhập Thông Tin Người Chơi</h1>
+
+            <form th:action="@{/luu-thong-tin}" method="post" th:object="${nguoichoi}" class="form-group">
+                <input type="text" th:field="*{hoten}" placeholder="Họ tên" class="input-field" required>
+                <input type="email" th:field="*{email}" placeholder="Email" class="input-field" required>
+
+                <div class="button-group">
+                    <button type="submit" class="btn">Bắt Đầu Chơi</button>
+                    <a href="/" class="btn">Trang Chủ</a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
