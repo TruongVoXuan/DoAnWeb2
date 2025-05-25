@@ -12,7 +12,7 @@ body, html {
     position: relative;
     color: white;
     text-align: center;
-    padding-top: 300px; /* 👈 Đẩy nội dung xuống dưới hình nền */
+    padding-top: 300px; 
 }
 
 /* Hình nền toàn màn hình */
@@ -38,7 +38,7 @@ body, html {
     padding: 20px;
     border-radius: 15px;
     max-width: 800px;
-    margin: 150px auto 0 auto; /* <-- THÊM margin-top: 50px */
+    margin: 150px auto 0 auto; 
     position: relative;
     z-index: 2;
     font-size: 20px;
@@ -48,7 +48,7 @@ body, html {
 .question-area {
     position: relative;
     z-index: 2;
-    margin-top: 120px; /* Tăng giá trị để đẩy xuống nhiều hơn */
+    margin-top: 120px; 
     text-align: center;
     color: white;
 }
@@ -104,14 +104,6 @@ body, html {
     z-index: 2;
 }
 
-/* Các mốc tiền thưởng */
-.money-ladder {
-   position: absolute;
-    right: 20px;
-    top: 120px;       /* Đẩy xuống thấp hơn lifelines */
-    text-align: right;
-    z-index: 2;
-}
 
 .money-ladder div {
     font-size: 16px;
@@ -126,8 +118,8 @@ body, html {
 /* Trợ giúp */
 .lifelines {
   position: absolute;
-    right: 20px;      /* cùng vị trí ngang với money-ladder */
-    top: 60px;       /* Đẩy xuống khoảng cách so với top để nó nằm trên các mức thưởng */
+    right: 20px;     
+    top: 60px;       
     z-index: 3;
     display: flex;
     gap: 10px;
@@ -138,3 +130,125 @@ body, html {
     margin: 0 5px;
     cursor: pointer;
 }
+/* Các mốc tiền thưởng */
+.money-ladder {
+    position: absolute;
+    right: 20px;
+    top: 120px;
+    text-align: right;
+        z-index: 3; 
+    width: 180px;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.money-ladder div {
+    font-size: 16px;
+    margin-bottom: 3px;
+    padding: 4px;
+    color: white;
+}
+
+.money-ladder .active-question {
+    background-color: gold;
+    color: black;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.confirm-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 30px 40px;
+    border: 2px solid #ffcc00;
+    border-radius: 15px;
+    z-index: 9999;
+    text-align: center;
+    font-size: 18px;
+    max-width: 400px;
+    width: 90%;
+}
+
+.confirm-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.confirm-buttons button {
+    background-color: black;
+    color: white;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.confirm-buttons button:hover {
+    background-color: #4300aa;
+}
+
+.hidden {
+    display: none;
+}
+
+.detail-box {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 500px;
+    margin: 20px auto 0 auto; 
+    position: relative;
+    z-index: 2;
+    font-size: 20px;
+    text-align: center;
+}
+
+
+.audience-chart-positioned {
+    position: absolute;
+    top: 120px;               /* Cùng mức top với money-ladder */
+    right: 220px;             /* Đặt cách money-ladder 220px (vì money-ladder có width: 180px + padding) */
+    width: 240px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    z-index: 3;
+    font-size: 14px;
+    box-shadow: 0 0 10px rgba(255,255,255,0.2);
+}
+
+.audience-chart-positioned .bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.audience-chart-positioned .label {
+    width: 25px;
+    font-weight: bold;
+}
+
+.audience-chart-positioned .progress {
+    height: 16px;
+    background-color: #00bfff;
+    border-radius: 5px;
+    flex-grow: 1;
+    margin: 0 10px;
+}
+
+.audience-chart-positioned .percent {
+    width: 40px;
+    text-align: right;
+}
+

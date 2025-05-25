@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Chi tiết phiên chơi</title>
+    <link rel="stylesheet" href="/css/ingame.css" />
+</head>
+<body>
+<div class="game-container">
+    <img src="/images/logoInGame.jpg" alt="Logo" class="main-img1" />
+
+    <div class="detail-box">
+        <h1>Chi tiết phiên chơi</h1>
+        <p><strong>Người chơi ID:</strong> <span th:text="${phienChoi.nguoichoi.id}"></span></p>
+        <p><strong>Thời gian bắt đầu:</strong> <span th:text="${phienChoi.thoigianBatdau.format(T(java.time.format.DateTimeFormatter).ofPattern('dd/MM/yyyy HH:mm:ss'))}"></span>
+</p>
+        <p><strong>Thời gian kết thúc:</strong>
+            <span th:text="${phienChoi.thoigianKetthuc != null ? phienChoi.thoigianKetthuc.format(T(java.time.format.DateTimeFormatter).ofPattern('dd/MM/yyyy HH:mm:ss')) : 'Chưa kết thúc'}"></span>
+
+        </p>
+        <p><strong>Số câu đúng:</strong> <span th:text="${phienChoi.soCaudung}"></span></p>
+
+        <form th:action="@{/home}" method="get">
+            <button class="answer-btn">Về trang chủ</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

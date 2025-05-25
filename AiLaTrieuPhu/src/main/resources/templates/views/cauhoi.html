@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Chơi Game</title>
     <link rel="stylesheet" href="/css/ingame.css">
-   
 </head>
 <body>
 <div class="container game-container">
@@ -13,43 +12,138 @@
     <div class="timer" id="timer">30</div>
 
     <div class="lifelines">
-        <img src="/images/5050.png" alt="50:50">
+        <img src="/images/5050.png" alt="50:50" id="5050"
+     th:attr="style=${daDung5050} ? 'pointer-events: none; opacity: 0.5;' : ''"
+     onclick="dung5050()">
         <img src="/images/call.jpg" alt="Call">
-        <img src="/images/audience.jpg" alt="Audience">
+      <img src="/images/audience.jpg" id="audience" alt="Audience" style="cursor:pointer;"
+     th:attr="style=${daDungAudience} ? 'pointer-events: none; opacity: 0.5; cursor: default;' : 'cursor: pointer;'"
+     th:onclick="${daDungAudience} ? null : 'goiKhanGia()'">
+
+
     </div>
 
-    <div class="money-ladder">
-        <div>15 - 150,000</div>
-        <div>14 - 85,000</div>
-        <div>13 - 60,000</div>
-        <div>12 - 40,000</div>
-        <div>11 - 30,000</div>
-        <div>10 - 22,000</div>
-        <div>9 - 14,000</div>
-        <div>8 - 10,000</div>
-        <div>7 - 6,000</div>
-        <div>6 - 3,000</div>
-        <div>5 - 2,000</div>
-        <div>4 - 1,000</div>
-        <div>3 - 600</div>
-        <div>2 - 400</div>
-        <div class="active-question">1 - 200</div>
-    </div>
 
-    <div class="question-box">
-    <p class="question-text">Trăng khoe trăng tỏ hơn ..., cớ sao trăng phải chịu luồng đám mây?</p>
-	</div>
-
-    <div class="answer-buttons">
-        <button class="answer-btn">A: Mờ</button>
-        <button class="answer-btn">B: Mây</button>
-        <button class="answer-btn">C: Sao</button>
-        <button class="answer-btn">D: Đèn</button>
+<div class="sidebar-container">
+  <div id="ketQuaKhanGia" class="audience-chart-positioned hidden">
+    <p>Khán giả chọn:</p>
+    <div class="bar"><span class="label">A</span><div class="progress" style="width: 0%"></div><span class="percent">0%</span></div>
+    <div class="bar"><span class="label">B</span><div class="progress" style="width: 0%"></div><span class="percent">0%</span></div>
+    <div class="bar"><span class="label">C</span><div class="progress" style="width: 0%"></div><span class="percent">0%</span></div>
+    <div class="bar"><span class="label">D</span><div class="progress" style="width: 0%"></div><span class="percent">0%</span></div>
+</div>
+  <!-- Mục mức thưởng -->
+   <!-- Mục mức thưởng chỉ hiển thị số tiền -->
+<div class="money-ladder">
+    <div th:each="m, iterStat : ${mucThuong}"
+         th:text="|${m}|"
+         th:classappend="${iterStat.index + 1} == ${capDo} ? ' active-question' : ''">
     </div>
 </div>
 
+</div>
+  
+
+
+    <!-- Hộp câu hỏi -->
+  <div class="question-box" th:if="${isCorrect} == null or !${isCorrect}">
+    <p class="question-text" th:text="${cauHoi.noidung}"></p>
+</div>
+    <!-- Các đáp án -->
+  <div class="answer-buttons" th:if="${isCorrect} == null or !${isCorrect}">
+    <form id="answerForm" th:action="@{/choigame}" method="post">
+    
+
+  
+    
+   
+    <input type="hidden" id="dapAnDung" th:value="${cauHoi.dapAnDung}" />
+
+
+    
+    <input type="hidden" name="capDo" th:value="${capDo}" />
+    <input type="hidden" name="dapAnChon" id="dapAnChonInput" />
+
+   <button class="answer-btn" type="button" value="A"
+        th:text="'A: ' + ${cauHoi.phuongAnA}"
+        th:attr="data-correct=${cauHoi.dapAnDung == 'A'}"
+        onclick="showConfirmForm(this.value)"></button>
+
+<button class="answer-btn" type="button" value="B"
+        th:text="'B: ' + ${cauHoi.phuongAnB}"
+        th:attr="data-correct=${cauHoi.dapAnDung == 'B'}"
+        onclick="showConfirmForm(this.value)"></button>
+
+<button class="answer-btn" type="button" value="C"
+        th:text="'C: ' + ${cauHoi.phuongAnC}"
+        th:attr="data-correct=${cauHoi.dapAnDung == 'C'}"
+        onclick="showConfirmForm(this.value)"></button>
+
+<button class="answer-btn" type="button" value="D"
+        th:text="'D: ' + ${cauHoi.phuongAnD}"
+        th:attr="data-correct=${cauHoi.dapAnDung == 'D'}"
+        onclick="showConfirmForm(this.value)"></button>
+
+</form>
+
+
+<div id="confirmBox" class="confirm-box hidden">
+    <p>Bạn có chắc chắn muốn chọn đáp án này?</p>
+    <div class="confirm-buttons">
+        <button onclick="submitAnswer()">Xác nhận</button>
+        <button onclick="hideConfirmBox()">Hủy</button>
+    </div>
+</div>
+
+
+</div>
+     <!-- Hộp xác nhận -->
+    <div class="question-box" th:if="${isCorrect}">
+    <h2>CHÚC MỪNG BẠN ĐÃ CHỌN ĐÁP ĐÚNG</h2>
+      <h2>
+  BẠN SẼ DỪNG VỚI 
+  <span th:text="${#numbers.formatInteger(currentMoney * 1000, 0, 'COMMA')}"></span> 
+  HAY CHƠI TIẾP?
+</h2>
+    </div>
+
+    <!-- Các nút xác nhận -->
+    <div class="answer-buttons" th:if="${isCorrect}">
+        <form th:action="@{/choitiep}" method="post">
+            <input type="hidden" name="capDo" th:value="${capDo + 1}" />
+            <button class="answer-btn" type="submit">CHƠI TIẾP</button>
+        </form>
+
+        <form th:action="@{/ketthuc}" method="post">
+            <input type="hidden" name="capDo" th:value="${capDo}" />
+            <button class="answer-btn" type="submit">NGỪNG CHƠI</button>
+        </form>
+    </div>
+</div>
+</div>
+
 <script>
-    // Đồng hồ đếm ngược 30s
+
+    let selectedAnswer = null;
+
+    function showConfirmForm(answer) {
+        selectedAnswer = answer;
+        document.getElementById("confirmBox").classList.remove("hidden");
+    }
+
+    function hideConfirmBox() {
+        selectedAnswer = null;
+        document.getElementById("confirmBox").classList.add("hidden");
+    }
+
+    function submitAnswer() {
+        if (selectedAnswer) {
+            document.getElementById("dapAnChonInput").value = selectedAnswer;
+            document.getElementById("answerForm").submit();
+        }
+    }
+
+    // Đồng hồ đếm ngược
     let time = 30;
     const timerElement = document.getElementById("timer");
 
@@ -61,6 +155,72 @@
             alert("Hết thời gian!");
         }
     }, 1000);
+    
+    // 50:50 logic
+    function dung5050() {
+    const buttons = Array.from(document.querySelectorAll(".answer-btn[type='button']"));
+    const wrongAnswers = buttons.filter(btn => btn.dataset.correct === "false");
+
+    // Chọn 2 đáp án sai ngẫu nhiên
+    let toHide = [];
+    while (toHide.length < 2 && wrongAnswers.length > 0) {
+        const index = Math.floor(Math.random() * wrongAnswers.length);
+        toHide.push(wrongAnswers.splice(index, 1)[0]);
+    }
+
+    // Ẩn 2 đáp án sai
+    toHide.forEach(btn => {
+        btn.style.visibility = "hidden";
+    });
+
+    // Làm mờ và vô hiệu hóa nút 50:50
+    const img = document.getElementById("5050");
+    img.style.pointerEvents = "none";
+    img.style.opacity = "0.5";
+
+    // Gửi yêu cầu POST đến server để lưu lại trạng thái đã dùng 50:50
+    fetch("/set-5050-used", { method: "POST" });
+   
+    
+}
+
+    function goiKhanGia() {
+        const dapAnDung = document.getElementById("dapAnDung").value;
+
+        fetch("/trogiup-audience", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "dapAnDung=" + dapAnDung
+        })
+        .then(response => response.json())
+        .then(data => {
+            const ketQuaDiv = document.getElementById("ketQuaKhanGia");
+            ketQuaDiv.classList.remove("hidden");
+            // Làm mờ và vô hiệu hóa nút 50:50
+            const img = document.getElementById("audience");
+            img.style.pointerEvents = "none";
+            img.style.opacity = "0.5";
+            const labels = ['A', 'B', 'C', 'D'];
+            labels.forEach((label, index) => {
+                const bar = ketQuaDiv.querySelectorAll(".bar")[index];
+                const percent = data[label] || 0;
+                bar.querySelector(".progress").style.width = percent + "%";
+                bar.querySelector(".percent").textContent = percent + "%";
+            });
+        })
+        .catch(err => {
+            alert("Không thể gọi trợ giúp khán giả!");
+            console.error(err);
+        });
+        
+        // Gửi yêu cầu POST đến server để lưu lại trạng thái đã dùng 50:50
+        fetch("/set-audience-used", { method: "POST" });
+       
+    }
+
+
+    
 </script>
+
 </body>
 </html>
