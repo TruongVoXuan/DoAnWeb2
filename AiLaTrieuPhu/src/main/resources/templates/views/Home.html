@@ -13,10 +13,41 @@
 
                 <div class="button-group">
                     <a href="/batdau" class="btn">Bắt Đầu</a>
-                    <a href="/huongdan" class="btn">Hướng Dẫn</a>
+                    <button class="btn" onclick="moHuongDan()">Hướng Dẫn</button>
                 </div>
             </div>
         </div>
     </div>
+    
+    <div id="huongDan" class="modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="dongHuongDan()">&times;</span>
+        <h3>HƯỚNG DẪN</h3>
+        <p>Vượt qua 15 câu hỏi của chương trình bạn sẽ dành được <span style="color:red; font-weight:bold;">150 triệu đồng</span>. Trả lời càng nhanh bạn còn nhận được thêm <span style="color:purple; font-weight:bold;">phần thưởng phụ bất ngờ</span> khác nữa.</p>
+        <ul>
+            <li><b>🌓 Trợ giúp 50/50:</b> Máy tính sẽ tự động loại bỏ 2 đáp án sai.</li>
+            <li><b>📊 Hỏi ý kiến khán giả:</b> Khán giả sẽ đưa ra đáp án họ cho là đúng.</li>
+        </ul>
+    </div>
+</div>
+
+
+<script>
+    function moHuongDan() {
+        document.getElementById("huongDan").style.display = "block";
+    }
+
+    function dongHuongDan() {
+        document.getElementById("huongDan").style.display = "none";
+    }
+
+    // Đóng modal khi click ngoài vùng modal
+    window.onclick = function(event) {
+        var modal = document.getElementById("huongDan");
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
 </body>
 </html>

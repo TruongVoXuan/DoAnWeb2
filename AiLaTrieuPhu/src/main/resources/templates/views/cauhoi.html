@@ -15,7 +15,7 @@
         <img src="/images/5050.png" alt="50:50" id="5050"
      th:attr="style=${daDung5050} ? 'pointer-events: none; opacity: 0.5;' : ''"
      onclick="dung5050()">
-        <img src="/images/call.jpg" alt="Call">
+
       <img src="/images/audience.jpg" id="audience" alt="Audience" style="cursor:pointer;"
      th:attr="style=${daDungAudience} ? 'pointer-events: none; opacity: 0.5; cursor: default;' : 'cursor: pointer;'"
      th:onclick="${daDungAudience} ? null : 'goiKhanGia()'">
@@ -87,6 +87,7 @@
 </form>
 
 
+
 <div id="confirmBox" class="confirm-box hidden">
     <p>Bạn có chắc chắn muốn chọn đáp án này?</p>
     <div class="confirm-buttons">
@@ -119,10 +120,23 @@
             <button class="answer-btn" type="submit">NGỪNG CHƠI</button>
         </form>
     </div>
+    
+<!-- Hộp thông báo kết thúc khi hết giờ -->
+<div id="ketThucModal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Hết thời gian!</h2>
+        <p>Trò chơi đã kết thúc vì bạn không chọn đáp án kịp thời.</p>
+        <form th:action="@{/ketthuc}" method="post">
+            <input type="hidden" name="capDo" th:value="${capDo-1}" />
+            <button type="submit" class="answer-btn">Xem kết quả</button>
+        </form>
+    </div>
+</div>
 </div>
 </div>
 
-<script>
+<script th:inline="javascript">
+	let isCorrect = /*[[${isCorrect}]]*/ false;
 
     let selectedAnswer = null;
 
@@ -143,18 +157,24 @@
         }
     }
 
+    
+    
     // Đồng hồ đếm ngược
-    let time = 30;
-    const timerElement = document.getElementById("timer");
+    
+     if (!isCorrect) {
+         let time = 30;
+         const timerElement = document.getElementById("timer");
 
-    const countdown = setInterval(() => {
-        time--;
-        timerElement.textContent = time;
-        if (time === 0) {
-            clearInterval(countdown);
-            alert("Hết thời gian!");
-        }
-    }, 1000);
+         const countdown = setInterval(() => {
+             time--;
+             timerElement.textContent = time;
+
+             if (time === 0) {
+                 clearInterval(countdown);
+                 document.getElementById("ketThucModal").classList.remove("hidden");
+             }
+         }, 1000);
+     }
     
     // 50:50 logic
     function dung5050() {
