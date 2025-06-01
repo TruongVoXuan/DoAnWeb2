@@ -51,13 +51,16 @@ public class GameController {
     @PostMapping("/choigame")
     public String checkAnswer(@RequestParam int capDo,
                               @RequestParam String dapAnChon,
+                              @RequestParam int cauHoiId,
                               Model model,HttpSession session) {
 
-        List<CauHoi> danhSachCauHoi = cauHoiRepository.findByCapdo(capDo);
-        if (danhSachCauHoi.isEmpty()) {
-            model.addAttribute("errorMessage", "Không tìm thấy câu hỏi cho cấp độ " + capDo);
-            return "views/error";
-        }
+
+			Optional<CauHoi> optionalCauHoi = cauHoiRepository.findById(cauHoiId);
+			if (!optionalCauHoi.isPresent()) {
+			model.addAttribute("errorMessage", "Không tìm thấy câu hỏi.");
+			return "views/error";
+			}
+
 
         
         Boolean daDung5050 = (Boolean) session.getAttribute("daDung5050");
@@ -67,7 +70,9 @@ public class GameController {
         Boolean daDungAudience = (Boolean) session.getAttribute("daDungAudience");
         model.addAttribute("daDungAudience", daDungAudience != null && daDungAudience);
         
-        CauHoi cauHoiHienTai = danhSachCauHoi.get(0);
+
+        CauHoi cauHoiHienTai = optionalCauHoi.get();
+
         boolean isCorrect = cauHoiHienTai.getDapAnDung().trim().equalsIgnoreCase(dapAnChon.trim());
 
         
@@ -79,6 +84,27 @@ public class GameController {
             if (soCauDung == null) soCauDung = 0;
             soCauDung++;
             session.setAttribute("soCauDung", soCauDung);
+            
+            
+            //Sử lý để end game khi chọn câu đúng
+            if (capDo == 15) {
+                // Lưu kết quả vào DB
+                Integer phienChoiId = (Integer) session.getAttribute("phienChoiId");
+                if (phienChoiId != null) {
+                    Optional<PhienChoi> optionalPhienChoi = phienChoiRepository.findById(phienChoiId);
+                    if (optionalPhienChoi.isPresent()) {
+                        PhienChoi phien = optionalPhienChoi.get();
+                        phien.setThoigianKetthuc(LocalDateTime.now());
+                        phien.setSoCaudung(soCauDung);
+                        phienChoiRepository.save(phien);
+                        model.addAttribute("phienChoiId", phienChoiId);
+                    }
+                }
+
+                model.addAttribute("message", "Chúc mừng bạn đã chiến thắng trò chơi!");
+                model.addAttribute("money", getMucThuongByCapDo(capDo));
+                return "views/wingame";
+            }
             
             
         	
@@ -105,42 +131,68 @@ public class GameController {
                 model.addAttribute("phienChoiId", phienChoiId); // ✅ THÊM MỚI để truyền qua HTML
             }
     
+
+      
+            model.addAttribute("cauHoi", cauHoiHienTai);
+            model.addAttribute("capDo", capDo);
+            model.addAttribute("dapAnChon", dapAnChon);
+            model.addAttribute("dapAnDung", cauHoiHienTai.getDapAnDung());
+            model.addAttribute("isCorrect", false);
+            model.addAttribute("daChonSai", true);
+            model.addAttribute("mucThuong", getMucThuongFormatted());
+
             model.addAttribute("message", "Đáp án sai! Trò chơi kết thúc.");
             model.addAttribute("money", getMucThuongByCapDo(capDo - 1));
-            return "views/ketthuc";
+            model.addAttribute("phienChoiId", phienChoiId);  // thêm để gửi sang ketthuc
+            return "views/cauhoi";
+
             
         }
     }
+    
 
     @PostMapping("/choitiep")
     public String choiTiep(@RequestParam int capDo, Model model, HttpSession session) {
         List<CauHoi> danhSachCauHoiMoi = cauHoiRepository.findByCapdo(capDo);
-  
 
-        CauHoi cauHoiMoi = danhSachCauHoiMoi.get(0);
+        if (danhSachCauHoiMoi == null || danhSachCauHoiMoi.isEmpty()) {
+            model.addAttribute("errorMessage", "Không tìm thấy câu hỏi cho cấp độ " + capDo);
+            return "views/error";
+        }
+
+        // ✅ Random 1 câu hỏi bất kỳ từ danh sách
+        Random random = new Random();
+        int index = random.nextInt(danhSachCauHoiMoi.size());
+        CauHoi cauHoiMoi = danhSachCauHoiMoi.get(index);
+
+        // ✅ Lưu câu hỏi hiện tại vào session
+        session.setAttribute("cauHoiHienTai", cauHoiMoi);
+
+        // ✅ Truyền dữ liệu sang view
         model.addAttribute("cauHoi", cauHoiMoi);
         model.addAttribute("capDo", capDo);
         model.addAttribute("mucThuong", getMucThuongFormatted());
-        model.addAttribute("isCorrect", false); 
-        
-        // đặt cờ 5050 vào seesion  để ẩn đi 5050 khi chơi tiếp 
+        model.addAttribute("isCorrect", false);
+        model.addAttribute("daChonSai", false);
+
+
+        // ✅ Truyền thông tin trợ giúp (nếu đã dùng)
         Boolean daDung5050 = (Boolean) session.getAttribute("daDung5050");
         model.addAttribute("daDung5050", daDung5050 != null && daDung5050);
-        
+
         Boolean daDungAudience = (Boolean) session.getAttribute("daDungAudience");
         model.addAttribute("daDungAudience", daDungAudience != null && daDungAudience);
-        
+
         return "views/cauhoi";
     }
 
-    @PostMapping("/ketthuc")
-    public String ketThuc(@RequestParam int capDo, Model model , HttpSession session) {
-    	
-    	
-    	
-    	  // ✅ Cập nhật thời gian kết thúc nếu người chơi tự ngưng
+    @PostMapping("/ngungchoi")
+    public String ngungChoi(@RequestParam int capDo, Model model, HttpSession session) {
+
+        // ✅ Xử lý lưu thông tin phiên chơi
         Integer phienChoiId = (Integer) session.getAttribute("phienChoiId");
         Integer soCauDung = (Integer) session.getAttribute("soCauDung");
+
         if (phienChoiId != null && soCauDung != null) {
             Optional<PhienChoi> optionalPhienChoi = phienChoiRepository.findById(phienChoiId);
             if (optionalPhienChoi.isPresent()) {
@@ -149,21 +201,53 @@ public class GameController {
                 phien.setSoCaudung(soCauDung);
                 phienChoiRepository.save(phien);
             }
-            
-            model.addAttribute("phienChoiId", phienChoiId); // ✅ THÊM MỚI để truyền qua HTML
+            model.addAttribute("phienChoiId", phienChoiId);
         }
-    	
-    	
-    	
-        model.addAttribute("message", "Bạn đã dừng cuộc chơi.");
+
+        // ✅ Truyền các thuộc tính cần thiết
         model.addAttribute("money", getMucThuongByCapDo(capDo));
-        return "views/ngungchoi";
+
+        // ✅ Truyền cờ xác định đây là "ngừng chơi" chứ KHÔNG phải "chọn sai"
+        model.addAttribute("daChonSai", false); // hoặc không truyền luôn cũng được
+
+        return "views/ngungchoi"; // View này sẽ quyết định hiển thị câu nào
     }
-    
-    
-    
-    
-    
+
+
+
+    @PostMapping("/ketthuc")
+    public String ketThuc(@RequestParam int capDo,
+                          @RequestParam(required = false) Integer phienChoiId,
+                          Model model, HttpSession session) {
+
+        if (phienChoiId == null) {
+            phienChoiId = (Integer) session.getAttribute("phienChoiId");
+        }
+
+        Integer soCauDung = (Integer) session.getAttribute("soCauDung");
+
+        if (phienChoiId != null && soCauDung != null) {
+            Optional<PhienChoi> optionalPhienChoi = phienChoiRepository.findById(phienChoiId);
+            if (optionalPhienChoi.isPresent()) {
+                PhienChoi phien = optionalPhienChoi.get();
+                phien.setThoigianKetthuc(LocalDateTime.now());
+                phien.setSoCaudung(soCauDung);
+                phienChoiRepository.save(phien);
+            }
+            model.addAttribute("phienChoiId", phienChoiId);
+        }
+
+        model.addAttribute("money", getMucThuongByCapDo(capDo - 1)); // -1 vì sai câu đó
+        model.addAttribute("daChonSai", true); // ✅ Cờ để view biết là do chọn sai
+
+        return "views/ketthuc";
+    }
+
+
+
+
+
+
     @PostMapping("/trogiup-audience")
     @ResponseBody
     public Map<String, Integer> hoiKhanGia(@RequestParam String dapAnDung) {

@@ -9,19 +9,25 @@
 <div class="game-container">
     <img src="/images/logoInGame.jpg" alt="Background" class="main-img1">
 
-  <div class="question-box">
-    <h1 style="color: red;">Bạn đã chọn sai đáp án!</h1>
-    <p>Bạn ra về với <span th:text="${#numbers.formatInteger(money * 1000, 0, 'COMMA')}"></span> VNĐ</p>
+    <div class="question-box">
+        <h1 style="color: red;">
+            <span th:if="${daChonSai} == true">Bạn đã chọn sai đáp án!</span>
+            <span th:if="${daChonSai} != true">Bạn đã dừng cuộc chơi.</span>
+        </h1>
 
-    <form th:action="@{/home}" method="get" style="display: inline;">
-        <button class="answer-btn">Về trang chủ</button>
-    </form>
+        <p>Bạn ra về với
+            <span th:text="${#numbers.formatInteger(money * 1000, 0, 'COMMA')}"></span> VNĐ
+        </p>
 
-    <form th:action="@{/phienchoi/chitiet}" method="get" style="display: inline;">
-        <input type="hidden" name="phienchoiId" th:value="${phienChoiId}" />
-        <button class="answer-btn">Xem chi tiết</button>
-    </form>
-</div>
+        <form th:action="@{/home}" method="get" style="display: inline;">
+            <button class="answer-btn">Về trang chủ</button>
+        </form>
+
+        <form th:action="@{/phienchoi/chitiet}" method="get" style="display: inline;">
+            <input type="hidden" name="phienchoiId" th:value="${phienChoiId}" />
+            <button class="answer-btn">Xem chi tiết</button>
+        </form>
+    </div>
 
 </div>
 </body>

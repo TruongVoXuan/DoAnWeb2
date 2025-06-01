@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chiến thắng trò chơi</title>
+    <link rel="stylesheet" href="/css/ingame.css">
+    <style>
+        /* Hiệu ứng pháo hoa */
+        body {
+            background-color: black;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+     
+        .question-box {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 3px solid gold;
+            border-radius: 20px;
+            padding: 40px;
+            display: inline-block;
+        }
+
+        .answer-btn {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 10px;
+            background-color: gold;
+            color: black;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .answer-btn:hover {
+            background-color: orange;
+        }
+    </style>
+</head>
+<body>
+<!-- Canvas cho pháo hoa -->
+<canvas class="fireworks" id="fireworks-canvas"></canvas>
+
+<div class="game-container">
+    <img src="/images/logoInGame.jpg" alt="Logo" class="main-img1">
+    <div class="question-box">
+        <h1 style="color: gold; font-size: 32px;">🎉 CHÚC MỪNG BẠN ĐÃ CHIẾN THẮNG 🎉</h1>
+        <p style="font-size: 24px;">Bạn ra về với 
+            <span th:text="${#numbers.formatInteger(money * 1000, 0, 'COMMA')}"></span> VNĐ</p>
+
+        <form th:action="@{/home}" method="get" style="display: inline;">
+            <button class="answer-btn">Về trang chủ</button>
+        </form>
+
+        <form th:action="@{/phienchoi/chitiet}" method="get" style="display: inline;">
+            <input type="hidden" name="phienchoiId" th:value="${phienChoiId}" />
+            <button class="answer-btn">Xem chi tiết</button>
+        </form>
+    </div>
+</div>
+
+<!-- Script pháo hoa -->
+<script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.10.3/dist/index.umd.js"></script>
+<script>
+    const container = document.getElementById("fireworks-canvas");
+    const fireworks = new Fireworks.default(container, {
+        rocketsPoint: {
+            min: 0,
+            max: 100
+        },
+        hue: {
+            min: 0,
+            max: 360
+        },
+        delay: {
+            min: 15,
+            max: 30
+        },
+        speed: 3,
+        acceleration: 1.05,
+        friction: 0.95,
+        gravity: 1.5,
+        particles: 80,
+        trace: 3,
+        explosion: 5
+    });
+
+    fireworks.start();
+</script>
+</body>
+</html>

@@ -17,8 +17,9 @@ body, html {
 
 /* Hình nền toàn màn hình */
 .main-img1 {
-    width: 100%;
-    height: auto;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
     position: absolute;
     top: 0;
     left: 0;
@@ -278,3 +279,28 @@ body, html {
     text-align: center;
     color: black;
 }
+
+
+/* Làm nổi bật đáp án đúng */
+.dap-an-dung {
+    background-color: #d4edda !important; /* xanh nhạt */
+    border: 2px solid #28a745; /* viền xanh */
+    font-weight: bold;
+    color: #155724;
+    animation: highlight 0.5s ease-in-out;
+}
+
+/* Làm nổi bật đáp án sai */
+.dap-an-sai {
+    background-color: #f8d7da !important; /* đỏ nhạt */
+    border: 2px solid #dc3545; /* viền đỏ */
+    font-weight: bold;
+    color: #721c24;
+}
+
+/* Hiệu ứng chuyển màu nhẹ */
+@keyframes highlight {
+    from { background-color: #ffffff; }
+    to { background-color: #d4edda; }
+}
+

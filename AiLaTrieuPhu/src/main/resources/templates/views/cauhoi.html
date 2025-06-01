@@ -16,7 +16,7 @@
      th:attr="style=${daDung5050} ? 'pointer-events: none; opacity: 0.5;' : ''"
      onclick="dung5050()">
 
-      <img src="/images/audience.jpg" id="audience" alt="Audience" style="cursor:pointer;"
+      <img src="/images/audience.png" id="audience" alt="Audience" style="cursor:pointer;"
      th:attr="style=${daDungAudience} ? 'pointer-events: none; opacity: 0.5; cursor: default;' : 'cursor: pointer;'"
      th:onclick="${daDungAudience} ? null : 'goiKhanGia()'">
 
@@ -37,7 +37,7 @@
 <div class="money-ladder">
     <div th:each="m, iterStat : ${mucThuong}"
          th:text="|${m}|"
-         th:classappend="${iterStat.index + 1} == ${capDo} ? ' active-question' : ''">
+         th:classappend="${iterStat.index + 1 == capDo} ? ' active-question' : ''">
     </div>
 </div>
 
@@ -63,6 +63,8 @@
     
     <input type="hidden" name="capDo" th:value="${capDo}" />
     <input type="hidden" name="dapAnChon" id="dapAnChonInput" />
+    <input type="hidden" name="cauHoiId" th:value="${cauHoi.id}" />
+    
 
    <button class="answer-btn" type="button" value="A"
         th:text="'A: ' + ${cauHoi.phuongAnA}"
@@ -115,7 +117,7 @@
             <button class="answer-btn" type="submit">CHƠI TIẾP</button>
         </form>
 
-        <form th:action="@{/ketthuc}" method="post">
+        <form th:action="@{/ngungchoi}" method="post">
             <input type="hidden" name="capDo" th:value="${capDo}" />
             <button class="answer-btn" type="submit">NGỪNG CHƠI</button>
         </form>
@@ -127,7 +129,7 @@
         <h2>Hết thời gian!</h2>
         <p>Trò chơi đã kết thúc vì bạn không chọn đáp án kịp thời.</p>
         <form th:action="@{/ketthuc}" method="post">
-            <input type="hidden" name="capDo" th:value="${capDo-1}" />
+            <input type="hidden" name="capDo" th:value="${capDo - 1}" />
             <button type="submit" class="answer-btn">Xem kết quả</button>
         </form>
     </div>
@@ -239,7 +241,52 @@
     }
 
 
-    
+    window.addEventListener('DOMContentLoaded', () => {
+        const isCorrect = /*[[${isCorrect}]]*/ null;
+        const selected = /*[[${dapAnChon}]]*/ null;
+
+        if (isCorrect === false && selected !== null) {
+            const buttons = document.querySelectorAll('.answer-btn');
+
+            buttons.forEach(btn => {
+                const isCorrectAnswer = btn.dataset.correct === "true";
+                const value = btn.value;
+
+                if (isCorrectAnswer) {
+                    btn.classList.add("dap-an-dung");
+                }
+
+                if (value === selected && !isCorrectAnswer) {
+                    btn.classList.add("dap-an-sai");
+                }
+
+                btn.disabled = true;
+            });
+        }
+    });
+
+
+
+    let daChonSai = /*[[${daChonSai}]]*/ false;
+    let capDo = /*[[${capDo}]]*/ 0;
+
+    if (daChonSai === true) {
+        setTimeout(() => {
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/ketthuc";
+
+            const capDoInput = document.createElement("input");
+            capDoInput.type = "hidden";
+            capDoInput.name = "capDo";
+            capDoInput.value = capDo;
+
+            form.appendChild(capDoInput);
+            document.body.appendChild(form);
+            form.submit();
+        }, 2000); // 2 giây sau khi chọn sai mới chạy
+    }
+
 </script>
 
 </body>
