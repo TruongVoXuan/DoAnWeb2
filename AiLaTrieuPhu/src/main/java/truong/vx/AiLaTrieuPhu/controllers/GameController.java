@@ -60,9 +60,7 @@ public class GameController {
 			model.addAttribute("errorMessage", "Không tìm thấy câu hỏi.");
 			return "views/error";
 			}
-
-
-        
+ 
         Boolean daDung5050 = (Boolean) session.getAttribute("daDung5050");
         model.addAttribute("daDung5050", daDung5050 != null && daDung5050);
         
@@ -76,7 +74,7 @@ public class GameController {
         boolean isCorrect = cauHoiHienTai.getDapAnDung().trim().equalsIgnoreCase(dapAnChon.trim());
 
         
-        
+        //Cập nhập số câu đúng
         if (isCorrect) {
         	
         	 // ✅ Tăng số câu đúng trong session
@@ -108,12 +106,12 @@ public class GameController {
             
             
         	
-            model.addAttribute("cauHoi", cauHoiHienTai); // ✅ bổ sung
+            model.addAttribute("cauHoi", cauHoiHienTai); 
             model.addAttribute("capDo", capDo);
             model.addAttribute("currentMoney", getMucThuongByCapDo(capDo));
             model.addAttribute("dapAnChon", dapAnChon);
             model.addAttribute("isCorrect", true);
-            model.addAttribute("mucThuong", getMucThuongFormatted()); // ✅ bổ sung để hiển thị thang tiền
+            model.addAttribute("mucThuong", getMucThuongFormatted()); //  hiển thị thang tiền
             return "views/cauhoi";
         } else {
         	
@@ -204,7 +202,7 @@ public class GameController {
             model.addAttribute("phienChoiId", phienChoiId);
         }
 
-        // ✅ Truyền các thuộc tính cần thiết
+        // khi ngừng chơi
         model.addAttribute("money", getMucThuongByCapDo(capDo));
 
         // ✅ Truyền cờ xác định đây là "ngừng chơi" chứ KHÔNG phải "chọn sai"

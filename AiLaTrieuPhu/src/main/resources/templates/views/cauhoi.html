@@ -128,7 +128,7 @@
     <div class="modal-content">
         <h2>Hết thời gian!</h2>
         <p>Trò chơi đã kết thúc vì bạn không chọn đáp án kịp thời.</p>
-        <form th:action="@{/ketthuc}" method="post">
+        <form th:action="@{/ngungchoi}" method="post">
             <input type="hidden" name="capDo" th:value="${capDo - 1}" />
             <button type="submit" class="answer-btn">Xem kết quả</button>
         </form>
